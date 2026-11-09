@@ -1,0 +1,31 @@
+# ===== Python =====
+.venv/
+__pycache__/
+*.pyc
+
+# ===== ESP-IDF 构建产物 =====
+build/
+sdkconfig.old
+dependencies.lock
+managed_components/
+
+# ===== 系统 / 编辑器 =====
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+
+# ===== 与本项目无关的残留 =====
+acl-recovery/
+_pdf_pages/
+pdf_render_tmp.py
+
+# ===== 参赛文档（公开仓库不传）=====
+docs/
+
+# ===== ESP32-Master 模板残留（BMI270 已弃用）=====
+ESP32_BMI270/
+ESP32_BMI270_Arduino.zip
+.devcontainer/
+.codeartsdoer/
+ESP32-Master/README.md

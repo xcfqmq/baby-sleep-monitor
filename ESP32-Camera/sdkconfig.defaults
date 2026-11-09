@@ -1,0 +1,38 @@
+# ===================== 目标芯片 =====================
+CONFIG_IDF_TARGET="esp32s3"
+
+# ===================== Flash 容量 =====================
+# 资料规格书：本板为 ESP32-S3-WROOM-1 模组
+#   N8R8  = 8MB Flash  + 8MB Octal PSRAM
+#   N16R8 = 16MB Flash + 8MB Octal PSRAM
+# 这里按 8MB 配置（对 8MB/16MB 模组都安全）；若确认是 16MB，改成下面两行：
+#   CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+#   CONFIG_ESPTOOLPY_FLASHSIZE="16MB"
+CONFIG_ESPTOOLPY_FLASHSIZE_8MB=y
+CONFIG_ESPTOOLPY_FLASHSIZE="8MB"
+
+# ===================== PSRAM（摄像头帧缓冲必须）=====================
+# R8 系列模组的 PSRAM 是八线（Octal SPI），跑 80MHz。
+# 如果启动日志出现 "PSRAM ID read error" 或 "Failed to init external RAM"，
+# 说明这颗模组的 PSRAM 是四线的：把 CONFIG_SPIRAM_MODE_OCT 换成 CONFIG_SPIRAM_MODE_QUAD
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+CONFIG_SPIRAM_SPEED_80M=y
+CONFIG_SPIRAM_USE_MALLOC=y
+
+# ===================== 任务栈 =====================
+# 摄像头初始化调用较深，主任务栈给大一点，避免栈溢出重启
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+
+# ===================== I2C：允许新旧驱动共存 =====================
+# 背景：摄像头的 SCCB 走旧版 I2C 驱动（IDF 5.3 < 5.4 时 esp32-camera 用的是 sccb.c），
+#       而我们的上报从机用的是新版驱动 driver/i2c_slave.h。
+#       IDF 默认只要检测到"两个驱动都被链接进固件"就直接 abort
+#       （check_i2c_driver_conflict，不做端口判断）。
+# 我们的实际情况：SCCB 用端口 1（IO4/5），从机用端口 0（IO47/48），是两个独立的 I2C 控制器，
+#       不存在真实冲突，所以打开这个官方开关跳过该检查。
+# 注意：如果以后把新旧驱动放到同一个 I2C 端口上，就会真的冲突，别这么干。
+CONFIG_I2C_SKIP_LEGACY_CONFLICT_CHECK=y
+
+# ===================== 日志 =====================
+CONFIG_LOG_DEFAULT_LEVEL_INFO=y
